@@ -1,21 +1,24 @@
 import React, { useState } from "react";
+import { Button, Layout, Menu, theme, ConfigProvider, Tooltip } from "antd";
 import {
    MenuFoldOutlined,
    MenuUnfoldOutlined,
    LogoutOutlined,
    NotificationOutlined,
 } from "@ant-design/icons";
-import { Button, Layout, Menu, theme, ConfigProvider, Tooltip } from "antd";
-import { Outlet } from "react-router";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation, Outlet, useNavigate } from "react-router-dom";
 import { admin } from "../../routes/routes";
 import logo from "../../assets/images/logo.png";
+import { Popconfirm } from "@components";
 const { Header, Sider, Content } = Layout;
+
 const Index = () => {
    const [collapsed, setCollapsed] = useState(false);
    const {
       token: { colorBgContainer, borderRadiusLG },
    } = theme.useToken();
+   const { pathname } = useLocation();
+   const navigate = useNavigate();
    return (
       <ConfigProvider
          theme={{
@@ -54,13 +57,14 @@ const Index = () => {
                <Menu
                   theme="dark"
                   mode="inline"
-                  defaultSelectedKeys={["1"]}
-                  items={admin.map((item, index) => ({
-                     key: index + 1,
-                     icon: item.icon,
-                     label: <NavLink to={item.path}>{item.content}</NavLink>,
-                  }))}
-               />
+                  defaultSelectedKeys={[pathname]}
+               >
+                  {admin.map((item) => (
+                     <Menu.Item key={item.path} icon={item.icon}>
+                        <NavLink to={item.path}>{item.content}</NavLink>
+                     </Menu.Item>
+                  ))}
+               </Menu>
             </Sider>
             <Layout>
                <Header
@@ -98,24 +102,31 @@ const Index = () => {
                            to="notifications"
                            style={{ marginRight: "10px", color: "#fff" }}
                         >
-                           <NotificationOutlined />
+                           <NotificationOutlined className="text-[1.3rem] mr-2 align-middle" />
                         </NavLink>
                      </Tooltip>
-                     <Button
-                        type="text"
-                        style={{ fontSize: "16px", color: "#fff" }}
+                     <Popconfirm
+                        title="Chiqish"
+                        description="Siz rostan chiqmoqchimisiz?"
+                        okText="Ha"
+                        cancelText="Yo'q"
+                        onConfirm={() => {
+                           localStorage.removeItem("access_token");
+                           navigate("/sign-in");
+                        }}
+                        placement="leftBottom"
                      >
                         <Tooltip title="Chiqish">
-                           <NavLink
-                              to="/"
-                              onClick={() =>
-                                 localStorage.removeItem("access_token")
-                              }
+                           <Button
+                              style={{
+                                 background: "rgb(0, 21, 41)",
+                                 color: "#fff",
+                              }}
                            >
                               Chiqish <LogoutOutlined />
-                           </NavLink>
+                           </Button>
                         </Tooltip>
-                     </Button>
+                     </Popconfirm>
                   </div>
                </Header>
                <Content

@@ -1,4 +1,5 @@
 import UniversalTable from "./universal-table";
 import Notifications from "./notifications";
 import ProtectedRoute from "./protected-route";
-export { UniversalTable, Notifications, ProtectedRoute };
+import Popconfirm from "./popconfirm";
+export { UniversalTable, Notifications, ProtectedRoute, Popconfirm };

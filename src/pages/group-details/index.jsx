@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Button, Tooltip } from "antd";
-import { HomeOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import { Button, Tooltip, message } from "antd";
+import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
-import { UniversalTable } from "@components";
+import { UniversalTable, Popconfirm } from "@components";
 import { topic, subjects } from "@service";
-
 const Index = () => {
    const { id } = useParams();
    const navigate = useNavigate();
@@ -59,9 +58,11 @@ const Index = () => {
          const res = await topic.delete(id);
          if (res.status === 200) {
             getData();
+            message.success("Mavzu o'chirildi");
          }
       } catch (error) {
          console.log(error);
+         message.error("Mavzu o'chirishda xatolik");
       }
    };
    const handleTableChange = (pagination) => {
@@ -136,32 +137,25 @@ const Index = () => {
                      <EditOutlined />
                   </Button>
                </Tooltip>
-               <Tooltip title="O'chirish">
-                  <Button
-                     style={{
-                        marginLeft: "10px",
-                        width: "10px",
-                        backgroundColor: "red",
-                        color: "white",
-                     }}
-                     onClick={() => deleteData(item.id)}
-                  >
-                     <DeleteOutlined />
-                  </Button>
-               </Tooltip>
-               <Tooltip title="Ma`lumot">
-                  <Button
-                     style={{
-                        marginLeft: "10px",
-                        width: "10px",
-                        color: "white",
-                        backgroundColor: "rgba(181,144,98,1)",
-                     }}
-                     onClick={() => alert(`${item.id}`)}
-                  >
-                     <HomeOutlined />
-                  </Button>
-               </Tooltip>
+               <Popconfirm
+                  title="Mavzu o'chirishni tasdiqlaysizmi?"
+                  onConfirm={() => deleteData(item.id)}
+                  okText="Ha"
+                  cancelText="Yo'q"
+               >
+                  <Tooltip title="O'chirish">
+                     <Button
+                        style={{
+                           marginLeft: "10px",
+                           width: "10px",
+                           backgroundColor: "red",
+                           color: "white",
+                        }}
+                     >
+                        <DeleteOutlined />
+                     </Button>
+                  </Tooltip>
+               </Popconfirm>
             </div>
          ),
       },
