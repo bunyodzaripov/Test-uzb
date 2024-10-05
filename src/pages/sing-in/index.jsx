@@ -1,9 +1,9 @@
-import React from "react";
 import { Button, Form, Input } from "antd";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { auth } from "@service";
 import { openNotification } from "@utils/notification";
+
 const Index = () => {
    const navigate = useNavigate();
    const handleSubmit = async (values) => {

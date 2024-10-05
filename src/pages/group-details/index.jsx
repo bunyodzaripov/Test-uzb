@@ -1,16 +1,21 @@
-import React, { useState, useEffect } from "react";
-import { Button, Tooltip, message } from "antd";
+import { useState, useEffect } from "react";
+import { Button, Tooltip } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { UniversalTable, Popconfirm } from "@components";
 import { topic, subjects } from "@service";
+import { Topics } from "@modals";
+import { openNotification } from "@utils/notification";
+
 const Index = () => {
    const { id } = useParams();
-   const navigate = useNavigate();
    const { search } = useLocation();
+   const navigate = useNavigate();
    const [data, setData] = useState([]);
    const [total, setTotal] = useState();
    const [subject, setSubject] = useState({});
+   const [open, setOpen] = useState(false);
+   const [update, setUpdate] = useState({});
    const [params, setParams] = useState({
       limit: 5,
       page: 1,
@@ -32,6 +37,13 @@ const Index = () => {
       getSubject();
    }, [params]);
 
+   const openModal = () => {
+      setOpen(true);
+   };
+   const handleClose = () => {
+      setOpen(false);
+      setUpdate({});
+   };
    const getData = async () => {
       try {
          const res = await topic.get(params);
@@ -53,16 +65,20 @@ const Index = () => {
          console.log(error);
       }
    };
+   const editData = (data) => {
+      setUpdate(data);
+      openModal();
+   };
    const deleteData = async (id) => {
       try {
          const res = await topic.delete(id);
          if (res.status === 200) {
             getData();
-            message.success("Mavzu o'chirildi");
+            openNotification("success", "Mavzu o'chirildi");
          }
       } catch (error) {
+         openNotification("error", "Mavzu o'chirishda xatolik");
          console.log(error);
-         message.error("Mavzu o'chirishda xatolik");
       }
    };
    const handleTableChange = (pagination) => {
@@ -132,7 +148,7 @@ const Index = () => {
                         color: "white",
                         backgroundColor: "rgba(181,144,98,1)",
                      }}
-                     onClick={() => alert("tahrirlash")}
+                     onClick={() => editData(item)}
                   >
                      <EditOutlined />
                   </Button>
@@ -162,20 +178,22 @@ const Index = () => {
    ];
    return (
       <div>
+         <Topics
+            open={open}
+            handleClose={handleClose}
+            update={update}
+            getData={getData}
+            id={id}
+         />
          <div className="m-4 mb-6">
             <h1 className=" text-[1.3rem] border-b-2 border-gray-300 pb-4">
                {subject?.name}
             </h1>
          </div>
          <div className="m-4 mt-11 flex justify-between">
-            <h1 className="text-1xl font-semibold">Uyga vazifalar</h1>
-            <Button
-               type="primary"
-               onClick={() =>
-                  navigate("/admin-layout/add-homework", { state: { id } })
-               }
-            >
-               Uyga vazifa qo`shish
+            <h1 className="text-1xl font-semibold"></h1>
+            <Button type="primary" onClick={openModal}>
+               Mavzu qo'shish
             </Button>
          </div>
          <UniversalTable

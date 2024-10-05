@@ -11,7 +11,6 @@ import {
    MyGroups,
    Profile,
    GroupDetails,
-   AddHomework,
    Subjects,
    AddTask,
 } from "@pages";
@@ -34,7 +33,6 @@ const Index = () => {
                <Route path="group/:id" element={<GroupDetails />} />
                <Route path="subjects/:id" element={<Subjects />} />
                <Route path="subjects/:id/add-task" element={<AddTask />} />
-               <Route path="add-homework" element={<AddHomework />} />
                <Route path="profile" element={<Profile />} />
                <Route path="notifications" element={<Notifications />} />
             </Route>
