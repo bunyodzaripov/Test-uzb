@@ -1,16 +1,41 @@
-import { useState } from "react";
-import { Form, Input, Button, Select, Upload, Space } from "antd";
-import { UploadOutlined, DeleteOutlined } from "@ant-design/icons";
-import { useNavigate, useParams } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Form, Input, Button, Select, Space } from "antd";
+import { DeleteOutlined } from "@ant-design/icons";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { UniversalTable } from "@components";
+import { question } from "@service";
+import { openNotification } from "@utils/notification";
 const { TextArea } = Input;
 const { Option } = Select;
 
-const CreateTask = () => {
+const Index = () => {
    const { id } = useParams();
+   const location = useLocation();
+   const { state } = location;
    const navigate = useNavigate();
    const [form] = Form.useForm();
    const [testCases, setTestCases] = useState([]);
+   const [file, setFile] = useState([]);
+   console.log("add question, Topic id:", id);
+   console.log("add question, state:", state);
+   console.log("add question, testCases:", testCases);
+
+   useEffect(() => {
+      if (state.id) {
+         form.setFieldsValue({
+            name: state.name,
+            description: state.description,
+            test_cases: state.test_cases,
+            difficulty: state.difficulty,
+            input_info: state.input_info,
+            output_info: state.output_info,
+            language: state.language,
+            constrains: state.constrains,
+         });
+      } else {
+         form.resetFields();
+      }
+   }, [state, form]);
 
    const handleAddTestCase = () => {
       setTestCases([
@@ -27,6 +52,64 @@ const CreateTask = () => {
       );
       setTestCases(updatedTestCases);
    };
+
+   const handleChange = (e) => {
+      let fileData = e.target.files[0];
+      setFile(fileData);
+   };
+
+   const handleSubmit = async (values) => {
+      console.log("values:", values);
+
+      if (state.id) {
+         try {
+            const res = await question.update(state.id, {
+               ...values,
+               topic_id: id,
+            });
+            if (res.status === 200) {
+               openNotification("success", "Masala yangilandi");
+               navigate(`/admin-layout/questions/${id}`);
+            } else {
+               openNotification("error", "Masala yangilashda xatolik");
+            }
+         } catch (error) {
+            console.log("Error:", error);
+            openNotification("error", "Noma'lum xato yuz berdi");
+         }
+      } else {
+         try {
+            const res = await question.create({
+               ...values,
+               topic_id: id,
+            });
+
+            if (res.status === 200) {
+               if (file) {
+                  const formData = new FormData();
+                  formData.append("file", file);
+
+                  try {
+                     await question.addImg(res?.data?.id, formData);
+                     openNotification("success", "Masala va rasm qo'shildi");
+                     navigate(`/admin-layout/questions/${id}`);
+                  } catch (uploadError) {
+                     navigate(`/admin-layout/questions/${id}`);
+                  }
+               } else {
+                  openNotification("success", "Masala qo'shildi");
+                  navigate(`/admin-layout/questions/${id}`);
+               }
+            } else {
+               openNotification("error", "Masala qo'shishda xatolik");
+            }
+         } catch (error) {
+            console.log("Error:", error);
+            openNotification("error", "Noma'lum xato yuz berdi");
+         }
+      }
+   };
+
    const columns = [
       {
          title: "Input",
@@ -67,20 +150,8 @@ const CreateTask = () => {
          ),
       },
    ];
-   const handleSubmit = async (values) => {
-      // console.log(values);
-      try {
-      } catch (error) {
-         console.log(error);
-      }
-      // alert("Masala qo'shildi!");
-      // navigate(`/admin-layout/subjects/${id}`);
-   };
-   console.log(id);
-
    return (
       <div style={{ padding: "20px" }}>
-         <h2>Masala qo'shish ID: {id}</h2>
          <Form form={form} layout="vertical" onFinish={handleSubmit}>
             <Form.Item
                label="Masala nomi"
@@ -128,7 +199,7 @@ const CreateTask = () => {
                <TextArea rows={4} />
             </Form.Item>
             <Form.Item
-               label="constrains"
+               label="Constrains"
                name="constrains"
                rules={[
                   {
@@ -171,11 +242,11 @@ const CreateTask = () => {
                   <Option value="PY">Python</Option>
                </Select>
             </Form.Item>
-            <Form.Item label="Rasm yuklash(ixtiyoriy)" name="image">
-               <Upload beforeUpload={() => false}>
-                  <Button icon={<UploadOutlined />}>Rasm yuklash</Button>
-               </Upload>
-            </Form.Item>
+            {!state?.id && (
+               <Form.Item label="Rasm yuklash" name="image">
+                  <Input type="file" onChange={handleChange} />
+               </Form.Item>
+            )}
             <h3 className="mb-4">Namunaviy testlar</h3>
             <UniversalTable
                columns={columns}
@@ -204,4 +275,4 @@ const CreateTask = () => {
    );
 };
 
-export default CreateTask;
+export default Index;

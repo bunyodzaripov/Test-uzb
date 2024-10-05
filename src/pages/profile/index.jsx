@@ -1,7 +1,11 @@
 import React from "react";
 
 const Index = () => {
-   return <div>Profile</div>;
+   return (
+      <div>
+         <h1 className="text-2xl">Profile</h1>
+      </div>
+   );
 };
 
 export default Index;

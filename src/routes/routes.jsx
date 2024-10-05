@@ -1,10 +1,10 @@
-import { GroupOutlined, UserOutlined } from "@ant-design/icons";
+import { UserOutlined, HomeOutlined } from "@ant-design/icons";
 
 const admin = [
    {
-      content: "Gruhlarim",
-      path: "/admin-layout",
-      icon: <GroupOutlined />,
+      content: "Bosh sahifa",
+      path: "/admin-layout/",
+      icon: <HomeOutlined />,
    },
    {
       content: "Profil",

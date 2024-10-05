@@ -6,6 +6,7 @@ import { openNotification } from "@utils/notification";
 
 const Index = () => {
    const navigate = useNavigate();
+
    const handleSubmit = async (values) => {
       try {
          const res = await auth.sign_in(values);
@@ -16,10 +17,18 @@ const Index = () => {
             openNotification("success", "Tizimga kirdingiz");
          }
       } catch (error) {
-         openNotification("error", "Login yoki parol noto'g'ri");
-         console.log(error);
+         if (error.response) {
+            if (error.response.status === 401) {
+               openNotification("error", "Login yoki parol noto'g'ri");
+            } else {
+               openNotification("error", "Noma'lum xato yuz berdi");
+            }
+         } else {
+            console.log(error);
+         }
       }
    };
+
    return (
       <div className="flex justify-center items-center h-[100vh]">
          <div className="flex flex-col justify-center items-center">

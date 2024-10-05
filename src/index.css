@@ -1,3 +1,18 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.task-details {
+   border-radius: 8px;
+   padding: 20px;
+}
+
+.task-detail {
+   font-size: 16px;
+   line-height: 1.5;
+   color: #333;
+}
+
+.task-detail strong {
+   color: #c2410c;
+}

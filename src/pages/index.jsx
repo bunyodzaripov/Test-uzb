@@ -1,16 +1,16 @@
 import SignIn from "./sing-in";
 import AdminLayout from "./admin-layout";
-import MyGroups from "./my-groups";
-import Profile from "./profile";
-import GroupDetails from "./group-details";
 import Subjects from "./subjects";
-import AddTask from "./add-task";
+import Profile from "./profile";
+import Topics from "./topics";
+import Questions from "./questions";
+import AddQuestion from "./add-question";
 export {
    SignIn,
    AdminLayout,
-   MyGroups,
-   Profile,
-   GroupDetails,
    Subjects,
-   AddTask,
+   Profile,
+   Topics,
+   Questions,
+   AddQuestion,
 };

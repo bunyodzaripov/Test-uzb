@@ -1,37 +1,57 @@
-import { useEffect, useState } from "react";
-import { Button, Modal } from "antd";
-import { useParams, useNavigate } from "react-router-dom";
-import { EyeOutlined } from "@ant-design/icons";
+import { useState, useEffect } from "react";
+import { Input, Form } from "antd";
+import { useNavigate, useLocation } from "react-router-dom";
 import { UniversalTable } from "@components";
-import { question } from "@service";
-const HomeworkDetail = () => {
-   const { id } = useParams();
+import { subjects } from "@service";
+
+const Index = () => {
+   const [form] = Form.useForm();
+   const { search } = useLocation();
+   const [total, setTotal] = useState();
+   const [data, setData] = useState([]);
+   const [params, setParams] = useState({
+      limit: 5,
+      page: 1,
+   });
    const navigate = useNavigate();
-   const [tasks, setTasks] = useState([]);
-   const [isModalVisible, setIsModalVisible] = useState(false);
-   const [selectedTask, setSelectedTask] = useState(null);
 
    useEffect(() => {
       getData();
-   }, []);
+   }, [params]);
+   useEffect(() => {
+      const params = new URLSearchParams(search);
+      const page = Number(params.get("page")) || 1;
+      const limit = Number(params.get("limit")) || 5;
+      setParams((prev) => ({
+         ...prev,
+         page: page,
+         limit: limit,
+      }));
+   }, [search]);
 
    const getData = async () => {
       try {
-         const res = await question.get();
+         const res = await subjects.get(params);
          if (res.status === 200) {
-            setTasks(res?.data?.questions);
-            console.log(res?.data?.questions);
+            setData(res?.data?.subjects);
+            setTotal(res?.data?.count);
          }
       } catch (error) {
          console.log(error);
       }
    };
-   const viewTask = (record) => {
-      setSelectedTask(record);
-      setIsModalVisible(true);
-   };
-   const handleCancel = () => {
-      setIsModalVisible(false);
+
+   const handleTableChange = (pagination) => {
+      const { current, pageSize } = pagination;
+      setParams((prev) => ({
+         ...prev,
+         page: current,
+         limit: pageSize,
+      }));
+      const current_params = new URLSearchParams(search);
+      current_params.set("page", `${current}`);
+      current_params.set("limit", `${pageSize}`);
+      navigate(`?${current_params}`);
    };
 
    const columns = [
@@ -42,73 +62,51 @@ const HomeworkDetail = () => {
          render: (_, record, index) => index + 1,
       },
       {
-         title: "Masala nomi",
+         title: "Yo'nalish nomi",
          dataIndex: "name",
-         key: "taskName",
+         key: "name",
+         render: (text, record) => (
+            <a onClick={() => navigate(`/admin-layout/topics/${record.id}`)}>
+               {text}
+            </a>
+         ),
       },
       {
-         title: "Harakat",
-         dataIndex: "action",
-         key: "action",
-         render: (_, record) => (
-            <Button type="primary" onClick={() => viewTask(record)}>
-               <EyeOutlined />
-            </Button>
-         ),
+         title: "Tavsif",
+         dataIndex: "description",
+         key: "description",
       },
    ];
    return (
-      <div style={{ padding: "20px" }}>
-         <h2>Uyga vazifa ID: {id}</h2>
-         <Button
-            type="primary"
-            onClick={() => navigate(`/admin-layout/subjects/${id}/add-task`)}
-         >
-            Masala qo'shish
-         </Button>
+      <>
+         <div className="mb-4">
+            <Form
+               form={form}
+               layout="vertical"
+               style={{ display: "flex", gap: "16px", alignItems: "flex-end" }}
+            >
+               <Form.Item name="name">
+                  <Input
+                     placeholder="Yo'nalish nomini kiriting..."
+                     allowClear
+                  />
+               </Form.Item>
+            </Form>
+         </div>
          <UniversalTable
             columns={columns}
-            dataSource={tasks}
-            style={{ marginTop: "20px" }}
+            dataSource={data}
+            pagination={{
+               current: params.page,
+               pageSize: params.limit,
+               total: total,
+               showSizeChanger: true,
+               pageSizeOptions: [3, 5, 10, 20],
+            }}
+            handleChange={handleTableChange}
          />
-
-         <Modal
-            title="Masala Tafsilotlari"
-            visible={isModalVisible}
-            onCancel={handleCancel}
-            footer={null}
-         >
-            {/* {selectedTask && (
-               <div className="p-4">
-                  <p className="mb-2">
-                     <strong>Task Name:</strong>{" "}
-                     {tasks || "No taskName"}
-                  </p>
-                  <p className="mb-2">
-                     <strong>Description:</strong>{" "}
-                     {localStorageTasks?.description || "No description"}
-                  </p>
-                  <p className="mb-2">
-                     <strong>Difficulty:</strong>{" "}
-                     {localStorageTasks?.difficulty || "No difficulty"}
-                  </p>
-                  <p className="mb-2">
-                     <strong>inputData:</strong>{" "}
-                     {localStorageTasks?.inputData || "No inputData"}
-                  </p>
-                  <p className="mb-2">
-                     <strong>outputData:</strong>{" "}
-                     {localStorageTasks?.outputData || "No outputData"}
-                  </p>
-                  <p className="mb-2">
-                     <strong>TestCase:</strong>{" "}
-                     {localStorageTasks?.testCases.length || "No TestCase"}
-                  </p>
-               </div>
-            )} */}
-         </Modal>
-      </div>
+      </>
    );
 };
 
-export default HomeworkDetail;
+export default Index;

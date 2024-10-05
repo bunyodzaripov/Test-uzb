@@ -8,11 +8,11 @@ import App from "../App";
 import {
    SignIn,
    AdminLayout,
-   MyGroups,
-   Profile,
-   GroupDetails,
    Subjects,
-   AddTask,
+   Profile,
+   Topics,
+   Questions,
+   AddQuestion,
 } from "@pages";
 import { Notifications, ProtectedRoute } from "@components";
 const Index = () => {
@@ -29,10 +29,13 @@ const Index = () => {
                   </ProtectedRoute>
                }
             >
-               <Route index element={<MyGroups />} />
-               <Route path="group/:id" element={<GroupDetails />} />
-               <Route path="subjects/:id" element={<Subjects />} />
-               <Route path="subjects/:id/add-task" element={<AddTask />} />
+               <Route index element={<Subjects />} />
+               <Route path="topics/:id" element={<Topics />} />
+               <Route path="questions/:id" element={<Questions />} />
+               <Route
+                  path="questions/:id/add-question"
+                  element={<AddQuestion />}
+               />
                <Route path="profile" element={<Profile />} />
                <Route path="notifications" element={<Notifications />} />
             </Route>

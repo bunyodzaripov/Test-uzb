@@ -21,6 +21,7 @@ const Index = () => {
       page: 1,
       subject_id: id,
    });
+   console.log("topics,  Subject id:", id);
 
    useEffect(() => {
       const params = new URLSearchParams(search);
@@ -109,7 +110,7 @@ const Index = () => {
             <Tooltip title={text}>
                <a
                   onClick={() =>
-                     navigate(`/admin-layout/subjects/${record.id}`)
+                     navigate(`/admin-layout/questions/${record.id}`)
                   }
                   style={{
                      whiteSpace: "nowrap",
@@ -177,7 +178,7 @@ const Index = () => {
       },
    ];
    return (
-      <div>
+      <>
          <Topics
             open={open}
             handleClose={handleClose}
@@ -190,9 +191,12 @@ const Index = () => {
                {subject?.name}
             </h1>
          </div>
-         <div className="m-4 mt-11 flex justify-between">
-            <h1 className="text-1xl font-semibold"></h1>
-            <Button type="primary" onClick={openModal}>
+         <div className="m-4 mt-11">
+            <Button
+               type="primary"
+               style={{ marginBottom: "20px", float: "right" }}
+               onClick={openModal}
+            >
                Mavzu qo'shish
             </Button>
          </div>
@@ -208,7 +212,7 @@ const Index = () => {
             }}
             handleChange={handleTableChange}
          />
-      </div>
+      </>
    );
 };
 
