@@ -11,6 +11,8 @@ const Index = () => {
       try {
          const res = await auth.sign_in(values);
          if (res.status === 200) {
+            console.log(res);
+
             localStorage.setItem("access_token", res.data.access);
             localStorage.setItem("refresh_token", res.data.refresh);
             navigate("/admin-layout");

@@ -15,10 +15,10 @@ const Index = () => {
    const navigate = useNavigate();
    const [form] = Form.useForm();
    const [testCases, setTestCases] = useState([]);
+   const [img, setImg] = useState([]);
    const [file, setFile] = useState([]);
    console.log("add question, Topic id:", id);
    console.log("add question, state:", state);
-   console.log("add question, testCases:", testCases);
 
    useEffect(() => {
       if (state.id) {
@@ -32,6 +32,7 @@ const Index = () => {
             language: state.language,
             constrains: state.constrains,
          });
+         setImg(state?.image);
       } else {
          form.resetFields();
       }
@@ -65,6 +66,7 @@ const Index = () => {
          try {
             const res = await question.update(state.id, {
                ...values,
+               image: img,
                topic_id: id,
             });
             if (res.status === 200) {
@@ -103,6 +105,7 @@ const Index = () => {
             } else {
                openNotification("error", "Masala qo'shishda xatolik");
             }
+            console.log("re222s:", res);
          } catch (error) {
             console.log("Error:", error);
             openNotification("error", "Noma'lum xato yuz berdi");
@@ -242,7 +245,7 @@ const Index = () => {
                   <Option value="PY">Python</Option>
                </Select>
             </Form.Item>
-            {!state?.id && (
+            {!state.id && (
                <Form.Item label="Rasm yuklash" name="image">
                   <Input type="file" onChange={handleChange} />
                </Form.Item>

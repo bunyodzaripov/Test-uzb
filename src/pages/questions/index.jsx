@@ -20,6 +20,7 @@ const Index = () => {
       topic_id: id,
    });
    console.log("Questions, Topic id:", id);
+   console.log(data, "data");
 
    useEffect(() => {
       const params = new URLSearchParams(search);
