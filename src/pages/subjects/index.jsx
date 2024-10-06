@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Input, Form } from "antd";
 import { useNavigate, useLocation } from "react-router-dom";
-import { UniversalTable } from "@components";
+import { UniversalTable, SkeletonWrapper } from "@components";
 import { subjects } from "@service";
 
 const Index = () => {
@@ -9,6 +9,7 @@ const Index = () => {
    const { search } = useLocation();
    const [total, setTotal] = useState();
    const [data, setData] = useState([]);
+   const [loading, setLoading] = useState(true);
    const [params, setParams] = useState({
       limit: 5,
       page: 1,
@@ -31,6 +32,7 @@ const Index = () => {
 
    const getData = async () => {
       try {
+         setLoading(true);
          const res = await subjects.get(params);
          if (res.status === 200) {
             setData(res?.data?.subjects);
@@ -38,6 +40,8 @@ const Index = () => {
          }
       } catch (error) {
          console.log(error);
+      } finally {
+         setLoading(false);
       }
    };
 
@@ -79,32 +83,38 @@ const Index = () => {
    ];
    return (
       <>
-         <div className="mb-4">
-            <Form
-               form={form}
-               layout="vertical"
-               style={{ display: "flex", gap: "16px", alignItems: "flex-end" }}
-            >
-               <Form.Item name="name">
-                  <Input
-                     placeholder="Yo'nalish nomini kiriting..."
-                     allowClear
-                  />
-               </Form.Item>
-            </Form>
-         </div>
-         <UniversalTable
-            columns={columns}
-            dataSource={data}
-            pagination={{
-               current: params.page,
-               pageSize: params.limit,
-               total: total,
-               showSizeChanger: true,
-               pageSizeOptions: [3, 5, 10, 20],
-            }}
-            handleChange={handleTableChange}
-         />
+         <SkeletonWrapper isLoading={loading} skeletonProps={{ rows: 6 }}>
+            <div className="mb-4">
+               <Form
+                  form={form}
+                  layout="vertical"
+                  style={{
+                     display: "flex",
+                     gap: "16px",
+                     alignItems: "flex-end",
+                  }}
+               >
+                  <Form.Item name="name">
+                     <Input
+                        placeholder="Yo'nalish nomini kiriting..."
+                        allowClear
+                     />
+                  </Form.Item>
+               </Form>
+            </div>
+            <UniversalTable
+               columns={columns}
+               dataSource={data}
+               pagination={{
+                  current: params.page,
+                  pageSize: params.limit,
+                  total: total,
+                  showSizeChanger: true,
+                  pageSizeOptions: [3, 5, 10, 20],
+               }}
+               handleChange={handleTableChange}
+            />
+         </SkeletonWrapper>
       </>
    );
 };

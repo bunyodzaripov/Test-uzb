@@ -1,30 +1,52 @@
 import { useEffect, useState } from "react";
 import { Button, Modal, Tooltip, Image } from "antd";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { EditOutlined, DeleteOutlined, EyeOutlined } from "@ant-design/icons";
-import { UniversalTable, Popconfirm } from "@components";
+import { UniversalTable, Popconfirm, SkeletonWrapper } from "@components";
 import { question } from "@service";
 
 const Index = () => {
    const { id } = useParams();
+   const { search } = useLocation();
    const navigate = useNavigate();
-   const [tasks, setTasks] = useState([]);
+   const [data, setData] = useState([]);
+   const [total, setTotal] = useState();
    const [open, setOpen] = useState(false);
+   const [loading, setLoading] = useState(true);
    const [selectedTask, setSelectedTask] = useState(null);
+   const [params, setParams] = useState({
+      limit: 5,
+      page: 1,
+      // topic_id: id,
+   });
    console.log("Questions, Topic id:", id);
 
    useEffect(() => {
+      const params = new URLSearchParams(search);
+      const page = Number(params.get("page")) || 1;
+      const limit = Number(params.get("limit")) || 5;
+      setParams((prev) => ({
+         ...prev,
+         page: page,
+         limit: limit,
+      }));
+   }, [search]);
+   useEffect(() => {
       getData();
-   }, [id]);
+   }, [params]);
 
    const getData = async () => {
       try {
-         const res = await question.get();
+         setLoading(true);
+         const res = await question.get(params);
          if (res.status === 200) {
-            setTasks(res?.data?.questions);
+            setData(res?.data?.questions);
+            setTotal(res?.data?.total);
          }
       } catch (error) {
          console.log(error);
+      } finally {
+         setLoading(false);
       }
    };
    const viewTask = (record) => {
@@ -46,6 +68,18 @@ const Index = () => {
    };
    const handleCancel = () => {
       setOpen(false);
+   };
+   const handleTableChange = (pagination) => {
+      const { current, pageSize } = pagination;
+      setParams((prev) => ({
+         ...prev,
+         page: current,
+         limit: pageSize,
+      }));
+      const current_params = new URLSearchParams(search);
+      current_params.set("page", `${current}`);
+      current_params.set("limit", `${pageSize}`);
+      navigate(`?${current_params}`);
    };
 
    const columns = [
@@ -133,23 +167,36 @@ const Index = () => {
    ];
    return (
       <div style={{ padding: "20px" }}>
-         <Button
-            type="primary"
-            style={{ marginBottom: "20px", float: "right" }}
-            onClick={() =>
-               navigate(`/admin-layout/questions/${id}/add-question`, {
-                  state: { topic_id: id },
-               })
-            }
+         <SkeletonWrapper
+            isLoading={loading}
+            skeletonProps={{ paragraph: { rows: 0 } }}
          >
-            Masala qo'shish
-         </Button>
-         <UniversalTable
-            columns={columns}
-            dataSource={tasks}
-            style={{ marginTop: "20px" }}
-         />
-
+            <Button
+               type="primary"
+               style={{ marginBottom: "20px", float: "right" }}
+               onClick={() =>
+                  navigate(`/admin-layout/questions/${id}/add-question`, {
+                     state: { topic_id: id },
+                  })
+               }
+            >
+               Masala qo'shish
+            </Button>
+         </SkeletonWrapper>
+         <SkeletonWrapper isLoading={loading} skeletonProps={{ avatar: true }}>
+            <UniversalTable
+               columns={columns}
+               dataSource={data}
+               pagination={{
+                  current: params.page,
+                  pageSize: params.limit,
+                  total: total,
+                  showSizeChanger: true,
+                  pageSizeOptions: [3, 5, 10, 20],
+               }}
+               handleChange={handleTableChange}
+            />
+         </SkeletonWrapper>
          <Modal
             title="Masala Tafsilotlari"
             open={open}

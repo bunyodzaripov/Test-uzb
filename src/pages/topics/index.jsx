@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Button, Tooltip } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
-import { UniversalTable, Popconfirm } from "@components";
+import { UniversalTable, Popconfirm, SkeletonWrapper } from "@components";
 import { topic, subjects } from "@service";
 import { Topics } from "@modals";
 import { openNotification } from "@utils/notification";
@@ -16,6 +16,7 @@ const Index = () => {
    const [subject, setSubject] = useState({});
    const [open, setOpen] = useState(false);
    const [update, setUpdate] = useState({});
+   const [loading, setLoading] = useState(true);
    const [params, setParams] = useState({
       limit: 5,
       page: 1,
@@ -47,6 +48,7 @@ const Index = () => {
    };
    const getData = async () => {
       try {
+         setLoading(true);
          const res = await topic.get(params);
          if (res.status === 200) {
             setData(res?.data?.topics);
@@ -54,6 +56,8 @@ const Index = () => {
          }
       } catch (error) {
          console.log(error);
+      } finally {
+         setLoading(false);
       }
    };
    const getSubject = async () => {
@@ -186,32 +190,45 @@ const Index = () => {
             getData={getData}
             id={id}
          />
-         <div className="m-4 mb-6">
-            <h1 className=" text-[1.3rem] border-b-2 border-gray-300 pb-4">
-               {subject?.name}
-            </h1>
-         </div>
-         <div className="m-4 mt-11">
-            <Button
-               type="primary"
-               style={{ marginBottom: "20px", float: "right" }}
-               onClick={openModal}
-            >
-               Mavzu qo'shish
-            </Button>
-         </div>
-         <UniversalTable
-            columns={columns}
-            dataSource={data}
-            pagination={{
-               current: params.page,
-               pageSize: params.limit,
-               total: total,
-               showSizeChanger: true,
-               pageSizeOptions: [3, 5, 10, 20],
-            }}
-            handleChange={handleTableChange}
-         />
+         <SkeletonWrapper
+            isLoading={loading}
+            skeletonProps={{ paragraph: { rows: 0 } }}
+         >
+            <div className="m-4 mb-6">
+               <h1 className=" text-[1.3rem] border-b-2 border-gray-300 pb-4">
+                  {subject?.name}
+               </h1>
+            </div>
+         </SkeletonWrapper>
+
+         <SkeletonWrapper
+            isLoading={loading}
+            skeletonProps={{ button: true, paragraph: { rows: 0 } }}
+         >
+            <div className="m-4 mt-11">
+               <Button
+                  type="primary"
+                  style={{ marginBottom: "20px", float: "right" }}
+                  onClick={openModal}
+               >
+                  Mavzu qo'shish
+               </Button>
+            </div>
+         </SkeletonWrapper>
+         <SkeletonWrapper isLoading={loading}>
+            <UniversalTable
+               columns={columns}
+               dataSource={data}
+               pagination={{
+                  current: params.page,
+                  pageSize: params.limit,
+                  total: total,
+                  showSizeChanger: true,
+                  pageSizeOptions: [3, 5, 10, 20],
+               }}
+               handleChange={handleTableChange}
+            />
+         </SkeletonWrapper>
       </>
    );
 };
