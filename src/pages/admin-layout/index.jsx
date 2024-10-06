@@ -1,10 +1,18 @@
 import { useState } from "react";
-import { Button, Layout, Menu, theme, ConfigProvider, Tooltip } from "antd";
+import {
+   Button,
+   Layout,
+   Menu,
+   theme,
+   ConfigProvider,
+   Tooltip,
+   Badge,
+} from "antd";
 import {
    MenuFoldOutlined,
    MenuUnfoldOutlined,
+   BellOutlined,
    LogoutOutlined,
-   NotificationOutlined,
 } from "@ant-design/icons";
 import { NavLink, useLocation, Outlet, useNavigate } from "react-router-dom";
 import { admin } from "../../routes/routes";
@@ -12,7 +20,7 @@ import logo from "../../assets/images/logo.png";
 import { Popconfirm } from "@components";
 const { Header, Sider, Content } = Layout;
 
-const Index = () => {
+const Index = ({ unreadCount = 2000 }) => {
    const [collapsed, setCollapsed] = useState(false);
    const {
       token: { colorBgContainer, borderRadiusLG },
@@ -100,9 +108,20 @@ const Index = () => {
                      <Tooltip title="Bildirish">
                         <NavLink
                            to="notifications"
-                           style={{ marginRight: "10px", color: "#fff" }}
+                           style={{
+                              marginRight: "30px",
+                              color: "#fff",
+                           }}
                         >
-                           <NotificationOutlined className="text-[1.3rem] mr-2 align-middle" />
+                           <Badge count={unreadCount} overflowCount={99}>
+                              <BellOutlined
+                                 style={{
+                                    fontSize: "24px",
+                                    color: "#fff",
+                                    verticalAlign: "middle",
+                                 }}
+                              />
+                           </Badge>
                         </NavLink>
                      </Tooltip>
                      <Popconfirm

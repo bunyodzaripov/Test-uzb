@@ -17,7 +17,7 @@ const Index = () => {
    const [params, setParams] = useState({
       limit: 5,
       page: 1,
-      // topic_id: id,
+      topic_id: id,
    });
    console.log("Questions, Topic id:", id);
 
