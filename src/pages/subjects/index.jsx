@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Input, Form } from "antd";
+import { Input, Form, Row, Tooltip } from "antd";
 import { useNavigate, useLocation } from "react-router-dom";
 import { UniversalTable, SkeletonWrapper } from "@components";
 import { subjects } from "@service";
@@ -70,15 +70,44 @@ const Index = () => {
          dataIndex: "name",
          key: "name",
          render: (text, record) => (
-            <a onClick={() => navigate(`/admin-layout/topics/${record.id}`)}>
-               {text}
-            </a>
+            <Tooltip title={text}>
+               <p
+                  style={{
+                     whiteSpace: "nowrap",
+                     overflow: "hidden",
+                     textOverflow: "ellipsis",
+                     display: "inline-block",
+                     maxWidth: "170px",
+                  }}
+               >
+                  {text}
+               </p>
+            </Tooltip>
          ),
+         onCell: (record) => ({
+            onClick: () => navigate(`/admin-layout/topics/${record.id}`),
+            style: { cursor: "pointer" },
+         }),
       },
       {
          title: "Tavsif",
          dataIndex: "description",
          key: "description",
+         render: (text, record) => (
+            <Tooltip title={text}>
+               <p
+                  style={{
+                     whiteSpace: "nowrap",
+                     overflow: "hidden",
+                     textOverflow: "ellipsis",
+                     display: "inline-block",
+                     maxWidth: "170px",
+                  }}
+               >
+                  {text}
+               </p>
+            </Tooltip>
+         ),
       },
    ];
    return (

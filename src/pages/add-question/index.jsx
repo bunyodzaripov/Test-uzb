@@ -17,8 +17,7 @@ const Index = () => {
    const [testCases, setTestCases] = useState([]);
    const [img, setImg] = useState([]);
    const [file, setFile] = useState([]);
-   console.log("add question, Topic id:", id);
-   console.log("add question, state:", state);
+   console.log(testCases, "testCasesdsdss");
 
    useEffect(() => {
       if (state.id) {
@@ -60,8 +59,6 @@ const Index = () => {
    };
 
    const handleSubmit = async (values) => {
-      console.log("values:", values);
-
       if (state.id) {
          try {
             const res = await question.update(state.id, {
@@ -270,7 +267,7 @@ const Index = () => {
             </Space>
             <Form.Item style={{ marginTop: "20px" }}>
                <Button type="primary" htmlType="submit">
-                  Masala qo'shish
+                  {state.id ? "Yangilash" : "Qo'shish"}
                </Button>
             </Form.Item>
          </Form>

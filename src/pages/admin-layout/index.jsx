@@ -20,13 +20,14 @@ import logo from "../../assets/images/logo.png";
 import { Popconfirm } from "@components";
 const { Header, Sider, Content } = Layout;
 
-const Index = ({ unreadCount = 2000 }) => {
+const Index = ({ unreadCount }) => {
    const [collapsed, setCollapsed] = useState(false);
    const {
       token: { colorBgContainer, borderRadiusLG },
    } = theme.useToken();
    const { pathname } = useLocation();
    const navigate = useNavigate();
+
    return (
       <ConfigProvider
          theme={{

@@ -22,7 +22,6 @@ const Index = () => {
       page: 1,
       subject_id: id,
    });
-   console.log("topics,  Subject id:", id);
 
    useEffect(() => {
       const params = new URLSearchParams(search);
@@ -112,10 +111,7 @@ const Index = () => {
          key: "name",
          render: (text, record) => (
             <Tooltip title={text}>
-               <a
-                  onClick={() =>
-                     navigate(`/admin-layout/questions/${record.id}`)
-                  }
+               <p
                   style={{
                      whiteSpace: "nowrap",
                      overflow: "hidden",
@@ -125,17 +121,36 @@ const Index = () => {
                   }}
                >
                   {text}
-               </a>
+               </p>
             </Tooltip>
          ),
+         onCell: (record) => ({
+            onClick: () => navigate(`/admin-layout/questions/${record.id}`),
+            style: { cursor: "pointer" },
+         }),
       },
       {
          title: "Tavsif",
          dataIndex: "description",
          key: "description",
+         render: (text, record) => (
+            <Tooltip title={text}>
+               <p
+                  style={{
+                     whiteSpace: "nowrap",
+                     overflow: "hidden",
+                     textOverflow: "ellipsis",
+                     display: "inline-block",
+                     maxWidth: "170px",
+                  }}
+               >
+                  {text}
+               </p>
+            </Tooltip>
+         ),
       },
       {
-         title: "Boshlangan sanasi",
+         title: "Kiritilgan sanasi",
          dataIndex: "created_at",
          key: "created_at",
          render: (text) => new Date(text).toLocaleDateString(),

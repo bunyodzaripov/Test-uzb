@@ -3,7 +3,8 @@ import { Button, Modal, Tooltip, Image } from "antd";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { EditOutlined, DeleteOutlined, EyeOutlined } from "@ant-design/icons";
 import { UniversalTable, Popconfirm, SkeletonWrapper } from "@components";
-import { question } from "@service";
+import { question, tasks } from "@service";
+import { openNotification } from "@utils/notification";
 
 const Index = () => {
    const { id } = useParams();
@@ -13,14 +14,13 @@ const Index = () => {
    const [total, setTotal] = useState();
    const [open, setOpen] = useState(false);
    const [loading, setLoading] = useState(true);
+   const [disabled, setDisabled] = useState(false);
    const [selectedTask, setSelectedTask] = useState(null);
    const [params, setParams] = useState({
       limit: 5,
       page: 1,
       topic_id: id,
    });
-   console.log("Questions, Topic id:", id);
-   console.log(data, "data");
 
    useEffect(() => {
       const params = new URLSearchParams(search);
@@ -48,6 +48,22 @@ const Index = () => {
          console.log(error);
       } finally {
          setLoading(false);
+      }
+   };
+   const addTask = async () => {
+      try {
+         const res = await tasks.create({
+            topic_id: id,
+            group_id: "4a227688-429e-4940-867d-3f47a91ace62",
+         });
+         if (res.status === 200) {
+            openNotification("success", "Task qo'shildi");
+            console.log(res, "res taks");
+            setDisabled(true);
+         }
+      } catch (error) {
+         openNotification("error", "Task qo'shishda xatolik");
+         console.log(error);
       }
    };
    const viewTask = (record) => {
@@ -94,6 +110,21 @@ const Index = () => {
          title: "Masala nomi",
          dataIndex: "name",
          key: "name",
+         render: (text, record) => (
+            <Tooltip title={text}>
+               <p
+                  style={{
+                     whiteSpace: "nowrap",
+                     overflow: "hidden",
+                     textOverflow: "ellipsis",
+                     display: "inline-block",
+                     maxWidth: "170px",
+                  }}
+               >
+                  {text}
+               </p>
+            </Tooltip>
+         ),
       },
       {
          title: "Rasm",
@@ -182,6 +213,18 @@ const Index = () => {
                }
             >
                Masala qo'shish
+            </Button>
+            <Button
+               disabled={disabled}
+               type="primary"
+               style={{
+                  marginBottom: "20px",
+                  float: "right",
+                  marginRight: "10px",
+               }}
+               onClick={addTask}
+            >
+               Task qo'shish
             </Button>
          </SkeletonWrapper>
          <SkeletonWrapper isLoading={loading} skeletonProps={{ avatar: true }}>
