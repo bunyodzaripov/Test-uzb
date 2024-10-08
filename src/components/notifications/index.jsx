@@ -1,17 +1,17 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useContext } from "react";
 import { List, Typography, message, Spin, Badge } from "antd";
 import dayjs from "dayjs";
-import { AdminLayout } from "@pages";
+import { UnreadContext } from "../../context/unread-context";
 
 const { Text } = Typography;
 
-const WS_URL = "wss://api.testuzb.uz/ws"; // WebSocket server URL
+const WS_URL = "wss://api.testuzb.uz/ws";
 
 const NotificationPage = () => {
    const [notifications, setNotifications] = useState([]);
    const [socket, setSocket] = useState(null);
    const [loading, setLoading] = useState(true);
-
+   const { setUnreadCount } = useContext(UnreadContext);
    const connectWebSocket = useCallback(() => {
       console.log("WebSocket ulanishi boshlanmoqda");
       const ws = new WebSocket(WS_URL);
@@ -81,7 +81,12 @@ const NotificationPage = () => {
       [socket]
    );
 
-   // O'qilmagan bildirishnomalar sonini hisoblash
+   useEffect(() => {
+      setUnreadCount(
+         notifications.filter((notification) => !notification.read).length
+      );
+   }, [notifications]);
+
    const unreadCount = notifications.filter(
       (notification) => !notification.read
    ).length;
@@ -92,7 +97,7 @@ const NotificationPage = () => {
 
    return (
       <div style={{ padding: "20px" }}>
-         <h1 style={{ marginBottom: "20px" }}>
+         <h1 style={{ marginBottom: "20px", fontSize: "24px" }}>
             Xabarnomalar
             <Badge count={unreadCount} style={{ marginLeft: "10px" }} />
          </h1>

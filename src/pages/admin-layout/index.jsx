@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import {
    Button,
    Layout,
@@ -18,10 +18,12 @@ import { NavLink, useLocation, Outlet, useNavigate } from "react-router-dom";
 import { admin } from "../../routes/routes";
 import logo from "../../assets/images/logo.png";
 import { Popconfirm } from "@components";
+import { UnreadContext } from "../../context/unread-context";
 const { Header, Sider, Content } = Layout;
 
-const Index = ({ unreadCount }) => {
+const Index = () => {
    const [collapsed, setCollapsed] = useState(false);
+   const { unreadCount } = useContext(UnreadContext);
    const {
       token: { colorBgContainer, borderRadiusLG },
    } = theme.useToken();

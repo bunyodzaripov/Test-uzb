@@ -1,4 +1,4 @@
-import SignIn from "./sing-in";
+import SignIn from "./sign-in";
 import AdminLayout from "./admin-layout";
 import Subjects from "./subjects";
 import Profile from "./profile";
