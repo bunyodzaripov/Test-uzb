@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Input, Form, Row, Tooltip } from "antd";
+import { Input, Form, Tooltip } from "antd";
 import { useNavigate, useLocation } from "react-router-dom";
 import { UniversalTable, SkeletonWrapper } from "@components";
 import { subjects } from "@service";
@@ -63,7 +63,8 @@ const Index = () => {
          title: "No",
          dataIndex: "no",
          key: "no",
-         render: (_, record, index) => index + 1,
+         render: (_, record, index) =>
+            (params.page - 1) * params.limit + index + 1,
       },
       {
          title: "Yo'nalish nomi",

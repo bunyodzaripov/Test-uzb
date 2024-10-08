@@ -41,6 +41,7 @@ const Index = () => {
          setLoading(true);
          const res = await question.get(params);
          if (res.status === 200) {
+            // const res = await question.getTestCases(data.id);
             setData(res?.data?.questions);
             setTotal(res?.data?.total);
          }
@@ -104,7 +105,8 @@ const Index = () => {
          title: "No",
          dataIndex: "no",
          key: "no",
-         render: (_, record, index) => index + 1,
+         render: (_, record, index) =>
+            (params.page - 1) * params.limit + index + 1,
       },
       {
          title: "Masala nomi",
@@ -197,6 +199,7 @@ const Index = () => {
          ),
       },
    ];
+
    return (
       <div style={{ padding: "20px" }}>
          <SkeletonWrapper
@@ -253,35 +256,36 @@ const Index = () => {
                <div className="task-details">
                   <p className="task-detail mb-2">
                      <strong>Masala nomi:</strong>{" "}
-                     {selectedTask.name || "No task name"}
+                     {selectedTask?.name || "No task name"}
                   </p>
                   <p className="task-detail mb-2">
                      <strong>Masala sharti:</strong>{" "}
-                     {selectedTask.description || "No description"}
+                     {selectedTask?.description || "No description"}
                   </p>
                   <p className="task-detail mb-2">
                      <strong>Kiruvchi ma`lumotlar:</strong>{" "}
-                     {selectedTask.input_info || "No input data"}
+                     {selectedTask?.input_info || "No input data"}
                   </p>
                   <p className="task-detail mb-2">
                      <strong>Chiquvchi ma`lumotlar:</strong>{" "}
-                     {selectedTask.output_info || "No output data"}
+                     {selectedTask?.output_info || "No output data"}
                   </p>
                   <p className="task-detail mb-2">
                      <strong>Constrains:</strong>{" "}
-                     {selectedTask.constrains || "No constrains data"}
+                     {selectedTask?.constrains || "No constrains data"}
                   </p>
                   <p className="task-detail mb-2">
                      <strong>Qiyinlik darajasi:</strong>{" "}
-                     {selectedTask.difficulty || "No difficulty"}
+                     {selectedTask?.difficulty || "No difficulty"}
                   </p>
                   <p className="task-detail mb-2">
                      <strong>Dasturlash tili:</strong>{" "}
-                     {selectedTask.language || "No language data"}
+                     {selectedTask?.language || "No language data"}
                   </p>
                   <p className="task-detail mb-2">
                      <strong>Yaratilgan:</strong>{" "}
-                     {selectedTask.created_at.slice(0, 10) || "No created data"}
+                     {selectedTask?.created_at.slice(0, 10) ||
+                        "No created data"}
                   </p>
                </div>
             ) : (

@@ -6,6 +6,7 @@ const question = {
    getOne: (id) => https.get(`/api/questions/get/${id}`),
    delete: (id) => https.delete(`/api/questions/delete/${id}`),
    update: (id, data) => https.put(`/api/questions/update/${id}`, data),
+   getTestCases: (id) => https.get(`/api/questions-inputs/question/${id}`),
 };
 
 export default question;

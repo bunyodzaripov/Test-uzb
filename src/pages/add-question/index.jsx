@@ -17,7 +17,6 @@ const Index = () => {
    const [testCases, setTestCases] = useState([]);
    const [img, setImg] = useState([]);
    const [file, setFile] = useState([]);
-   console.log(testCases, "testCasesdsdss");
 
    useEffect(() => {
       if (state.id) {
@@ -37,27 +36,29 @@ const Index = () => {
       }
    }, [state, form]);
 
+   // test cases
    const handleAddTestCase = () => {
-      setTestCases([
-         ...testCases,
-         { key: testCases.length, input: "", output: "" },
-      ]);
+      setTestCases([...testCases, { input: "", output: "" }]);
    };
-   const handleRemoveTestCase = (key) => {
-      setTestCases(testCases.filter((testCase) => testCase.key !== key));
+
+   const handleRemoveTestCase = (index) => {
+      setTestCases(testCases.filter((_, i) => i !== index));
    };
-   const handleInputChange = (value, key, field) => {
-      const updatedTestCases = testCases.map((testCase) =>
-         testCase.key === key ? { ...testCase, [field]: value } : testCase
+
+   const handleInputChange = (value, index, field) => {
+      const updatedTestCases = testCases.map((testCase, i) =>
+         i === index ? { ...testCase, [field]: value } : testCase
       );
       setTestCases(updatedTestCases);
    };
 
+   // file
    const handleChange = (e) => {
       let fileData = e.target.files[0];
       setFile(fileData);
    };
 
+   // submit
    const handleSubmit = async (values) => {
       if (state.id) {
          try {
@@ -81,6 +82,7 @@ const Index = () => {
             const res = await question.create({
                ...values,
                topic_id: id,
+               inputs_outputs: testCases,
             });
 
             if (res.status === 200) {
@@ -102,7 +104,7 @@ const Index = () => {
             } else {
                openNotification("error", "Masala qo'shishda xatolik");
             }
-            console.log("re222s:", res);
+            console.log("Res submit form:", res);
          } catch (error) {
             console.log("Error:", error);
             openNotification("error", "Noma'lum xato yuz berdi");
@@ -110,16 +112,17 @@ const Index = () => {
       }
    };
 
+   // table
    const columns = [
       {
          title: "Input",
          dataIndex: "input",
          key: "input",
-         render: (_, record) => (
+         render: (_, record, index) => (
             <Input
                value={record.input}
                onChange={(e) =>
-                  handleInputChange(e.target.value, record.key, "input")
+                  handleInputChange(e.target.value, index, "input")
                }
             />
          ),
@@ -128,11 +131,11 @@ const Index = () => {
          title: "Output",
          dataIndex: "output",
          key: "output",
-         render: (_, record) => (
+         render: (_, record, index) => (
             <Input
                value={record.output}
                onChange={(e) =>
-                  handleInputChange(e.target.value, record.key, "output")
+                  handleInputChange(e.target.value, index, "output")
                }
             />
          ),
@@ -141,15 +144,16 @@ const Index = () => {
          title: "Actions",
          key: "actions",
          align: "center",
-         render: (_, record) => (
+         render: (_, record, index) => (
             <Button
                icon={<DeleteOutlined />}
-               onClick={() => handleRemoveTestCase(record.key)}
+               onClick={() => handleRemoveTestCase(index)}
                danger
             />
          ),
       },
    ];
+
    return (
       <div style={{ padding: "20px" }}>
          <Form form={form} layout="vertical" onFinish={handleSubmit}>

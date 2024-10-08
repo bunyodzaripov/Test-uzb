@@ -103,7 +103,8 @@ const Index = () => {
          title: "No",
          dataIndex: "no",
          key: "no",
-         render: (_, record, index) => index + 1,
+         render: (_, record, index) =>
+            (params.page - 1) * params.limit + index + 1,
       },
       {
          title: "Mavzu",
@@ -196,6 +197,7 @@ const Index = () => {
          ),
       },
    ];
+
    return (
       <>
          <Topics
