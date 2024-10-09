@@ -35,29 +35,46 @@ const Index = () => {
          form.resetFields();
       }
    }, [state, form]);
+   useEffect(() => {
+      getTestCases();
+   }, [state]);
 
    // test cases
    const handleAddTestCase = () => {
       setTestCases([...testCases, { input: "", output: "" }]);
    };
+   const getTestCases = async () => {
+      try {
+         const res = await question.getTestCases(state.id);
+         if (res.status === 200) {
+            const formattedTestCases = res.data.inputs_with_outputs;
+            formattedTestCases.forEach((testCase) => {
+               testCase.input = testCase.input.input;
+               testCase.output = testCase.output.answer;
 
-   const handleRemoveTestCase = (index) => {
-      setTestCases(testCases.filter((_, i) => i !== index));
+               setTestCases((prevTestCases) => [...prevTestCases, testCase]);
+            });
+         }
+      } catch (error) {
+         console.log(error);
+      }
    };
 
+   const handleRemoveTestCase = (index) => {
+      console.log(index, "index");
+      setTestCases(testCases.filter((_, i) => i !== index));
+   };
    const handleInputChange = (value, index, field) => {
       const updatedTestCases = testCases.map((testCase, i) =>
          i === index ? { ...testCase, [field]: value } : testCase
       );
       setTestCases(updatedTestCases);
    };
-
    // file
    const handleChange = (e) => {
       let fileData = e.target.files[0];
       setFile(fileData);
    };
-
    // submit
    const handleSubmit = async (values) => {
       if (state.id) {
