@@ -7,6 +7,7 @@ const question = {
    delete: (id) => https.delete(`/api/questions/delete/${id}`),
    update: (id, data) => https.put(`/api/questions/update/${id}`, data),
    getTestCases: (id) => https.get(`/api/question-inputs/question/${id}`),
+   deleteTestCases: (id) => https.delete(`/api/question-inputs/delete/${id}`),
 };
 
 export default question;

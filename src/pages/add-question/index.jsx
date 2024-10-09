@@ -49,9 +49,9 @@ const Index = () => {
          if (res.status === 200) {
             const formattedTestCases = res.data.inputs_with_outputs;
             formattedTestCases.forEach((testCase) => {
+               testCase.id = testCase.input.id;
                testCase.input = testCase.input.input;
                testCase.output = testCase.output.answer;
-
                setTestCases((prevTestCases) => [...prevTestCases, testCase]);
             });
          }
@@ -59,10 +59,19 @@ const Index = () => {
          console.log(error);
       }
    };
-
-   const handleRemoveTestCase = (index) => {
-      console.log(index, "index");
-      setTestCases(testCases.filter((_, i) => i !== index));
+   const handleRemoveTestCase = async (id) => {
+      try {
+         const res = await question.deleteTestCases(id);
+         if (res.status === 200) {
+            setTestCases((prevTestCases) =>
+               prevTestCases.filter((testCase) => testCase.id !== id)
+            );
+            openNotification("success", "Test case o'chirildi");
+         }
+      } catch (error) {
+         openNotification("error", "Test case o'chirishda xatolik");
+         console.log(error);
+      }
    };
    const handleInputChange = (value, index, field) => {
       const updatedTestCases = testCases.map((testCase, i) =>
@@ -161,10 +170,10 @@ const Index = () => {
          title: "Actions",
          key: "actions",
          align: "center",
-         render: (_, record, index) => (
+         render: (_, record) => (
             <Button
                icon={<DeleteOutlined />}
-               onClick={() => handleRemoveTestCase(index)}
+               onClick={() => handleRemoveTestCase(record.id)}
                danger
             />
          ),
