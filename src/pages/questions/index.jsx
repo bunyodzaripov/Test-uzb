@@ -55,7 +55,7 @@ const Index = () => {
       try {
          const res = await tasks.create({
             topic_id: id,
-            group_id: "4a227688-429e-4940-867d-3f47a91ace62",
+            group_id: "a4699e9b-0c83-407e-8001-aa0b7d3295e9",
          });
          if (res.status === 200) {
             openNotification("success", "Task qo'shildi");
